@@ -38,7 +38,7 @@ $(function(){
                     $('#conversation-ad-body-mask').animate({height:Convo.mask_height},200,callback);
                 });
             } else {
-                if (callback) callback();
+                if (callback){callback();}
             } 
         },
 
@@ -56,8 +56,8 @@ $(function(){
         },
 
         show_flash: function(status,message){
-            var class = (status === 0 ? "infinite_frowns" : "infinite_smiles")
-            $('#conversation-ad-alert').attr('class',class)
+            var msg_class = (status === 0 ? "infinite_frowns" : "infinite_smiles")
+            $('#conversation-ad-alert').attr('class',msg_class)
                 .html(message)
                 .show();
             $('#conversation-ad-body-mask').height(409);
@@ -127,8 +127,8 @@ $(function(){
         },
 
         enparagraph: function(text){
-            text = text.replace(/\n/g,"</p><p>")
-            output = "<p>"+text+"</p>"
+            var text = text.replace(/\n/g,"</p><p>"),
+                output = "<p>"+text+"</p>" ;
             return output;
         }
     }
@@ -176,7 +176,7 @@ $(function(){
                         Convo.status = data;
                     } else {
                         Convo.minimize(function(){
-                            Convo.show_flash(1, "Your message has been sent.")
+                            Convo.show_flash(1, "Your message has been sent.");
                         });
                         Convo.status = data;
                     }
