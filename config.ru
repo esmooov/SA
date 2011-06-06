@@ -2,7 +2,7 @@ require 'rubygems'
 require File.expand_path(File.dirname(__FILE__) + "/conversation")
 
 set :run, false
-set :environment, :production
+set :environment, :development
 
 log = File.new("/tmp/sinatra.log", "a")
 STDOUT.reopen(log)
