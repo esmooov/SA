@@ -102,8 +102,8 @@ $(function(){
         get_entries: function(callback){
             $.ajax({
                 type: "GET",
-                url: "/blog_entries",
-                dataType: "jsonp",
+                url: "/feeds/feed.json",
+                dataType: "json",
                 success:function(data){
                     Convo.entries = data.channel[0].item;
                     callback();

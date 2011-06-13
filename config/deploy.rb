@@ -30,5 +30,11 @@ namespace :deploy do
   task :restart, :roles => :app, :except => { :no_release => true } do
     run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
   end
+  
+  task :relink do
+    sudo "ln -nfs #{shared_path}/feeds" "#{release_path}/public/feeds"
+  end
 
 end
+
+after "deploy:symlink", :relink
