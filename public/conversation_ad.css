@@ -141,6 +141,7 @@ padding:10px;
 border-bottom:1px solid #ffffff;
 width:280px;
 position:absolute;
+z-index:30;
 }
 
 .infinite_frowns {
