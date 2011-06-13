@@ -139,6 +139,8 @@ font-size:12px;
 font-family:"Helvetica-Neue",helvetica, arial, sans-serif;
 padding:10px;
 border-bottom:1px solid #ffffff;
+width:280px;
+position:absolute;
 }
 
 .infinite_frowns {

@@ -13,8 +13,7 @@ $(function(){
                 $('#conversation-ad-feedback').animate({height:String(Convo.avg_height)},200,function(){
                
                     $('#conversation-ad-minimizer').show();
-                    $('#conversation-ad-input').val("")
-                        .css({overflow:"auto"})
+                    $('#conversation-ad-input').css({overflow:"auto"})
                         .animate({width:"270px",height:"150px"},200);
                     $('#conversation-ad-name').show();
                 });
@@ -60,10 +59,8 @@ $(function(){
             $('#conversation-ad-alert').attr('class',msg_class)
                 .html(message)
                 .show();
-            $('#conversation-ad-body-mask').height(409);
             setTimeout(function(){
                 $('#conversation-ad-alert').hide();
-                $('#conversation-ad-body-mask').height(440);
             },10000);
         
         },
