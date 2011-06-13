@@ -8,6 +8,6 @@ namespace :fetch do
     xml = RestClient.get 'http://projecteuler.net/rss2_euler.xml'
     xml = XmlSimple.xml_in(xml)
     q = xml.to_json
-    File.open("#{APP_ROOT}/public/feed.json","w"){|f| f.write(q)}
+    File.open("#{APP_ROOT}/public/feeds/feed.json","w"){|f| f.write(q)}
   end
 end

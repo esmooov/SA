@@ -31,10 +31,10 @@ namespace :deploy do
     run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
   end
   
-  task :relink do
-    sudo "ln -nfs #{shared_path}/feeds" "#{release_path}/public/feeds"
-  end
+end
 
+task :relink do
+  sudo "ln -nfs #{shared_path}/feeds" "#{release_path}/public/feeds"
 end
 
 after "deploy:symlink", :relink
