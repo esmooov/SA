@@ -34,7 +34,7 @@ namespace :deploy do
 end
 
 task :relink do
-  sudo "ln -nfs #{shared_path}/feeds" "#{release_path}/public/feeds"
+  sudo "ln -nfs #{shared_path}/feeds #{release_path}/public/feeds"
 end
 
 after "deploy:symlink", :relink
