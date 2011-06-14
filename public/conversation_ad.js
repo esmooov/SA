@@ -2,6 +2,8 @@ $(function(){
     window.Convo = {};
     Convo = {
         
+        scrolled: false,
+
         template: _.template($('#conversation-ad-template').html()),
 
         expand: function(){
@@ -121,6 +123,9 @@ $(function(){
             Convo.body_height = $('#conversation-ad-body').height();
             Convo.avg_height = (Convo.feedback_height + Convo.mask_height)/2;
             Convo.scroll_speed = (Convo.body_height/1000)*5000;
+            $('a').click(function(){
+              _gaq.push(['_trackEvent', 'Ads', 'Conversation (CurrentTV)', 'click']);
+            });
         },
 
         enparagraph: function(text){
@@ -136,6 +141,10 @@ $(function(){
             max_scroll = -1 * (Convo.body_height - mask_height),
             scroll_progress = $('#conversation-ad-body').position().top / max_scroll,
             speed = Convo.scroll_speed * (1-scroll_progress);
+        if(! Convo.scrolled){
+          _gaq.push(['_trackEvent', 'Ads', 'Conversation (CurrentTV)', 'scroll']);
+          Convo.scrolled = true;
+        }
         $('#conversation-ad-body').animate({top:String(max_scroll)},speed,'linear');
     },function(){
         $('#conversation-ad-body').stop(true,false);
@@ -146,6 +155,10 @@ $(function(){
             max_scroll = -1 * (Convo.body_height - mask_height),
             scroll_progress = $('#conversation-ad-body').position().top / max_scroll,
             speed = Convo.scroll_speed * scroll_progress;
+        if(! Convo.scrolled){
+          _gaq.push(['_trackEvent', 'Ads', 'Conversation (CurrentTV)', 'scroll']);
+          Convo.scrolled = true;
+        }
         $('#conversation-ad-body').animate({top:0},speed,'linear');
     },function(){
         $('#conversation-ad-body').stop(true,false);
