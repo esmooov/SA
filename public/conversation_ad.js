@@ -101,6 +101,7 @@ $(function(){
         get_entries: function(callback){
             $.ajax({
                 type: "GET",
+                cache: false,
                 url: "/feeds/feed.json",
                 dataType: "json",
                 success:function(data){
