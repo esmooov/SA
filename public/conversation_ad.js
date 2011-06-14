@@ -167,6 +167,7 @@ $(function(){
 
     $('#conversation-ad-input').focus(function(){
         Convo.expand();
+        _gaq.push(['_trackEvent', 'Ads', 'Conversation (CurrentTV)', 'focus']);
     });
     
     $('#conversation-ad-minimizer').click(function(){
