@@ -111,7 +111,7 @@ $(function(){
         parse_entries:function(){
             $('#conversation-ad-body').empty(); 
             _(Convo.entries).each(function(item){
-                item.description = Convo.enparagraph(item.description[0]);
+                //item.description = Convo.enparagraph(item.description[0]);
                 var entry = Convo.template(item);
                 $('#conversation-ad-body').append(entry);
             });              
