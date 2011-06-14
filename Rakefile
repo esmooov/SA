@@ -8,8 +8,8 @@ namespace :fetch do
     xml = RestClient.get 'http://current.com/shows/countdown/rssfeed/'
     xml = XmlSimple.xml_in(xml)
     xml["channel"][0]["item"] = xml["channel"][0]["item"].map do |q| 
-      puts q["pubDate"] 
       q["pubDate"][0] = Date.parse(q["pubDate"][0]).strftime("%b %d &mdash; %I:%M %p")
+      q
     end
     xml["channel"][0]["item"] = xml["channel"][0]["item"].select{|q| q["description"][0].class == String}
     q = xml.to_json
