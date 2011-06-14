@@ -22,9 +22,9 @@ post '/convo_msg' do
   check = Spam.checkIP(redis,request.host)
   callback = Spam.sanitize_callback(params[:callback] || "")
   if check[0]
-    Pony.mail(:to => 'twotonmary@gmail.com',
+    Pony.mail(:to => 'countdown@current.com',
               :from => 'conversation-ad-mailer@talkingpointsmemo.com',
-              :subject => "Message from TPM User #{params[:name]}",
+              :subject => "To: KEITH From: TPM READER #{params[:name]}",
               :body => params[:message]
     )
     q = {:ip => check[0], :attempts => check[1]["attempts"]}.to_json
