@@ -127,6 +127,7 @@ $(function(){
             $('a').click(function(){
               _gaq.push(['_trackEvent', 'Ads', 'Conversation (CurrentTV)', 'click']);
             });
+            $('a').attr('target', '_blank');
         },
 
         enparagraph: function(text){
