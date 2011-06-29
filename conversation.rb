@@ -13,6 +13,11 @@ get '/:company' do
   erb params[:company].intern
 end
 
+get '/:company/conversation_ad.js' do
+  @company = params[:company]
+  erb :conversation_ad_js
+end
+
 post '/:company/convo_msg' do
   check = Spam.checkIP(redis,request.host)
   callback = Spam.sanitize_callback(params[:callback] || "")
