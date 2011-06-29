@@ -6,7 +6,7 @@ redis.select 7
 COMPANIES = {"currenttv" => {:to => 'twotonmary@gmail.com',
               :from => 'conversation-ad-mailer@talkingpointsmemo.com',
               :subject => "To: KEITH From: TPM READER ",
-              :body => ""}
+              :body => ""},
              "boeing" => {}}
 
 get '/:company' do
