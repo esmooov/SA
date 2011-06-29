@@ -102,7 +102,7 @@ $(function(){
             $.ajax({
                 type: "GET",
                 cache: false,
-                url: "/feeds/feed.json",
+                url: "/feeds/currenttv.json",
                 dataType: "json",
                 success:function(data){
                     Convo.entries = data.channel[0].item;
