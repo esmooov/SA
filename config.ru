@@ -1,5 +1,5 @@
 require 'rubygems'
-require File.expand_path(File.dirname(__FILE__) + "/conversation")
+require File.expand_path(File.dirname(__FILE__) + "/simanneal")
 
 set :run, false
 set :environment, :production
