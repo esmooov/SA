@@ -50,11 +50,11 @@ SA.exchangeCells = function(data,rule){
 }
 
 SA.anneal = function(){
-  var temp = 40,
+  var temp = 8,
       i = 0,
       oldscore = SA.scoreGen(SA.datareal),
       rule,p,candp,candidate,score,theta;
-  while(temp > 8){
+  while(temp > .8){
     rule = SA.randCells();
     p = Math.random();
     candidate = SA.exchangeCells(SA.datareal,rule);
@@ -63,9 +63,9 @@ SA.anneal = function(){
     candp = 1/(1+(Math.pow(Math.E,-1*(theta/temp))));
     if (candp > p) {
       SA.datareal = candidate;
+      oldscore = score;
     }
     temp = temp * Math.pow(Math.E,-.0001);
-    oldscore = score;
     i++;
   }
   return i;
