@@ -6,16 +6,16 @@ SA.twodeepCopy = function(arr){
   return onedeep.slice();
 }
 SA.friends = function(data,cell,ridx,cidx){
-  var l = cidx > 0 ? data[ridx][cidx-1] : cell,
-      r = cidx < 9 ? data[ridx][cidx+1] : cell,
-      t = ridx > 0 ? data[ridx-1][cidx] : cell,
-      b = ridx < 9 ? data[ridx+1][cidx] : cell,
-      ans = _([l,r,t,b]).filter(function(c){return c !== cell}).length;
-      return (ans < 2 ? 0 : ans);
-}
-
-SA.sumArray = function(arr){
-  return _(arr).reduce(function(i,m){return i+m},0);
+  var l = cidx > 0 ? data[ridx][cidx-1] : 0,
+      r = cidx < 9 ? data[ridx][cidx+1] : 0,
+      t = ridx > 0 ? data[ridx-1][cidx] : 0,
+      b = ridx < 9 ? data[ridx+1][cidx] : 0,
+      ans = _([l,r,t,b]).reduce(function(memo,val){
+        var newmemo = memo;
+        if (val === cell){newmemo[0] += 1} else if (val !== 0) {newmemo[1] += 1}
+        return newmemo;
+      },[0,0])
+      return (ans[0] > 0 ? ans[0]*-1 : ans[1]);
 }
 
 SA.scoreGen = function(data){
@@ -24,12 +24,12 @@ SA.scoreGen = function(data){
       return SA.friends(data,cell,ridx,cidx)
     })
   });
-  var total = _(ev_data).map(function(r,m){
-    var rowsum;
-    rowsum = SA.sumArray(r);
-    return rowsum;
+  var total = _(ev_data).reduce(function(rmem,row){
+    return _(row).reduce(function(cmem,cell){
+      return cmem+cell;
+    },0) + rmem
   },0);
-  return SA.sumArray(total);
+  return total;
 }
 
 SA.randCells = function(){
@@ -50,11 +50,12 @@ SA.exchangeCells = function(data,rule){
 }
 
 SA.anneal = function(){
-  var temp = 8,
+  var temp = 4,
       i = 0,
       oldscore = SA.scoreGen(SA.datareal),
-      rule,p,candp,candidate,score,theta;
-  while(temp > .8){
+      states = [],
+      rule,p,candp,candidate,score,theta,state;
+  while(temp > .7){
     rule = SA.randCells();
     p = Math.random();
     candidate = SA.exchangeCells(SA.datareal,rule);
@@ -64,9 +65,35 @@ SA.anneal = function(){
     if (candp > p) {
       SA.datareal = candidate;
       oldscore = score;
+      state = SA.twodeepCopy(SA.datareal);
+      states.push(state);
     }
-    temp = temp * Math.pow(Math.E,-.0001);
+    temp = temp * Math.pow(Math.E,-.0002);
     i++;
   }
-  return i;
+  return states;
 }
+
+SA.palette = {1: "red",
+              2: "blue",
+              3: "yellow",
+              4: "white"
+              }
+
+SA.drawState = function(data){
+  var canvas = document.getElementById("canvas"),
+      c = canvas.getContext("2d");
+  for (i = 0; i < 10; i++){
+    for (j = 0; j < 10; j++){
+      var cell = data[i][j];
+      c.fillStyle = SA.palette[cell];
+      c.fillRect(i*40,j*40,40,40);
+    }
+  }
+}
+$(function(){
+  $('#canvas').click(function(){
+    a = SA.anneal();
+    SA.i = setInterval(function(){var s = a.shift(); SA.drawState(s); if (a.length === 0){clearInterval(SA.i)}},1000/240);
+  });
+});
