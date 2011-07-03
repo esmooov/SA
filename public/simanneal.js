@@ -1,5 +1,5 @@
 SA = {}
-SA.datareal = [[3, 2, 3, 4, 3, 2, 4, 2, 2, 1], [1, 2, 3, 4, 2, 2, 3, 2, 2, 1], [3, 3, 4, 2, 4, 4, 4, 2, 2, 4], [2, 3, 2, 4, 4, 1, 4, 4, 4, 1], [3, 4, 2, 3, 3, 4, 3, 4, 3, 3], [3, 2, 4, 2, 2, 1, 3, 4, 3, 4], [4, 4, 2, 1, 1, 1, 4, 3, 4, 1], [3, 4, 2, 4, 1, 3, 2, 3, 4, 3], [3, 1, 1, 2, 4, 4, 2, 3, 1, 3], [4, 1, 2, 3, 3, 2, 3, 2, 4, 1]]
+SA.datareal = [[3, 2, 3, 1, 3, 2, 4, 1, 2, 1], [1, 2, 3, 4, 2, 2, 3, 2, 2, 1], [3, 3, 4, 2, 4, 1, 4, 2, 2, 4], [2, 3, 2, 1, 4, 1, 4, 4, 4, 1], [3, 4, 2, 3, 3, 4, 3, 4, 3, 3], [3, 2, 4, 2, 2, 1, 3, 4, 3, 4], [1, 4, 2, 1, 1, 1, 4, 3, 4, 1], [1, 4, 2, 4, 1, 3, 2, 3, 4, 3], [3, 1, 1, 2, 4, 4, 2, 3, 1, 3], [4, 1, 2, 3, 1, 2, 3, 2, 4, 1]]
 
 SA.datareala = (function(){
   var output = [];
@@ -17,23 +17,69 @@ SA.twodeepCopy = function(arr){
   var onedeep = _(arr).map(function(r){return r.slice();});
   return onedeep.slice();
 }
-SA.friends = function(data,cell,ridx,cidx){
+SA.friends = function(data,memo,cell,ridx,cidx){
   var l = cidx > 0 ? data[ridx][cidx-1] : 0,
       r = cidx < 9 ? data[ridx][cidx+1] : 0,
       t = ridx > 0 ? data[ridx-1][cidx] : 0,
       b = ridx < 9 ? data[ridx+1][cidx] : 0,
-      ans = _([l,r,t,b]).reduce(function(memo,val){
-        var newmemo = memo;
-        if (val === cell){newmemo[0] += 1} else {newmemo[1] += 1}
-        return newmemo;
-      },[0,0])
-      return (ans[0] > 0 ? ans[0]*-1 : ans[1]);
+      lm = cidx > 0 ? memo[ridx][cidx-1] : 0,
+      tm = ridx > 0 ? memo[ridx-1][cidx] : 0,
+      score = _([[l,lm],[r,0],[t,tm],[b,0]]).reduce(function(m,val){
+        if(val[0] == cell){
+          return m+val[1]+1;
+        } else {
+          return m;
+        } 
+      },0);
+      if (_.isUndefined(memo[ridx])){
+        memo[ridx] = [];
+      }
+      memo[ridx][cidx] = score;
+      return score;
+}
+
+SA.countBlocks = function(data){
+  var countdata = _(data).map(function(row,ri){
+    return _(row).map(function(cell,ci){
+      return [cell,ri,ci,false]
+    })
+  }),
+    end = false,
+    blocks = 0;
+  while(! end){
+    blocks++;
+    end = SA.trace(countdata);
+  }
+  return blocks-1;
+}
+
+SA.trace = function(data){
+  var row = _(data).detect(function(r){return _(r).detect(function(c){return ! c[3];})}),
+      cell,
+      moveMark = function(c){
+        var l = c[2] > 0 ? data[c[1]][c[2]-1] : [-1,-1,-1,true],
+            r = c[2] < 9 ? data[c[1]][c[2]+1] : [-1,-1,-1,true],
+            t = c[1] > 0 ? data[c[1]-1][c[2]] : [-1,-1,-1,true],
+            b = c[1] < 9 ? data[c[1]+1][c[2]] : [-1,-1,-1,true];
+            c[3] = true;
+            _([l,r,t,b]).each(function(n){
+              if (n[0] === c[0] && ! n[3]){ moveMark(n) }
+            });
+      };
+      if (row){
+        cell = _(row).detect(function(c){return ! c[3];});
+        moveMark(cell);
+        return false;
+      } else {
+        return true;
+      }
 }
 
 SA.scoreGen = function(data){
+  SA.memo = []
   var ev_data = _(data).map(function(row,ridx){
     return _(row).map(function(cell,cidx){
-      return SA.friends(data,cell,ridx,cidx)
+      return SA.friends(data,SA.memo,cell,ridx,cidx)
     })
   });
   var total = _(ev_data).reduce(function(rmem,row){
@@ -63,17 +109,17 @@ SA.exchangeCells = function(data,rule){
 }
 
 SA.anneal = function(data){
-  var temp = 4,
+  var temp = 35,
       i = 0,
       oldscore = SA.scoreGen(data),
       states = [],
       rule,p,candp,candidate,score,theta,state;
-  while(temp > .7){
+  while(temp > 7){
     rule = SA.randCells(data);
     p = Math.random();
     candidate = SA.exchangeCells(data,rule);
     score = SA.scoreGen(candidate);
-    theta = oldscore - score;
+    theta = score - oldscore;
     candp = 1/(1+(Math.pow(Math.E,-1*(theta/temp))));
     if (candp > p) {
       data = candidate;
@@ -81,8 +127,32 @@ SA.anneal = function(data){
       state = SA.twodeepCopy(data);
       states.push(state);
     }
-    temp = temp * Math.pow(Math.E,-.0002);
+    temp = temp * Math.pow(Math.E,-.0004);
     i++;
+  }
+  return states;
+}
+
+SA.anneala = function(data){
+  var temp = 5,
+      i = 0,
+      oldscore = SA.scoreGen(data),
+      states = [],
+      rule,p,candp,candidate,score,theta,state;
+  while(temp > .3){
+    rule = SA.randCells(data);
+    p = Math.random();
+    candidate = SA.exchangeCells(data,rule);
+    score = SA.countBlocks(candidate);
+    theta = oldscore-score;
+    candp = 1/(1+(Math.pow(Math.E,-1*(theta/temp))));
+    if (candp > p) {
+      data = candidate;
+      oldscore = score;
+      state = SA.twodeepCopy(data);
+      states.push(state);
+    }
+    temp = temp * Math.pow(Math.E,-.002);
   }
   return states;
 }
@@ -108,7 +178,7 @@ SA.drawState = function(data){
 }
 $(function(){
   $('#canvas').click(function(){
-    a = SA.anneal(SA.datareal);
+    a = SA.anneala(SA.datareal);
     SA.i = setInterval(function(){var s = a.shift(); SA.drawState(s); if (a.length === 0){clearInterval(SA.i)}},1000/240);
   });
 });
