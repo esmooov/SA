@@ -3,8 +3,8 @@ SA.datareal = [[3, 2, 3, 1, 3, 2, 4, 1, 2, 1], [1, 2, 3, 4, 2, 2, 3, 2, 2, 1], [
 
 SA.datareala = (function(){
   var output = [];
-  for (i = 0; i < 50; i++){
-    for (j = 0; j < 50; j++){
+  for (i = 0; i < 20; i++){
+    for (j = 0; j < 20; j++){
       if (_.isUndefined(output[i])) {output[i] = []}
       output[i][j] = Math.floor(Math.random() * 4+1);
     }
@@ -45,16 +45,20 @@ SA.countBlocks = function(data){
     })
   }),
     end = false,
-    blocks = 0;
+    blocks = 0,
+    score = 0;
   while(! end){
-    blocks++;
-    end = SA.trace(countdata);
+    result = SA.trace(countdata);
+    score = result[1]*(-0.125)+4.125;
+    blocks = blocks + score;
+    end = result[0];
   }
   return blocks-1;
 }
 
 SA.trace = function(data){
   var row = _(data).detect(function(r){return _(r).detect(function(c){return ! c[3];})}),
+      counter = 0,
       cell,
       moveMark = function(c){
         var l = c[2] > 0 ? data[c[1]][c[2]-1] : [-1,-1,-1,true],
@@ -63,15 +67,15 @@ SA.trace = function(data){
             b = c[1] < 9 ? data[c[1]+1][c[2]] : [-1,-1,-1,true];
             c[3] = true;
             _([l,r,t,b]).each(function(n){
-              if (n[0] === c[0] && ! n[3]){ moveMark(n) }
+              if (n[0] === c[0] && ! n[3]){ counter++; moveMark(n) }
             });
       };
       if (row){
         cell = _(row).detect(function(c){return ! c[3];});
         moveMark(cell);
-        return false;
+        return [false,counter];
       } else {
-        return true;
+        return [true,counter];
       }
 }
 
@@ -136,7 +140,7 @@ SA.anneal = function(data){
 SA.anneala = function(data){
   var temp = 5,
       i = 0,
-      oldscore = SA.scoreGen(data),
+      oldscore = SA.countBlocks(data),
       states = [],
       rule,p,candp,candidate,score,theta,state;
   while(temp > .3){
@@ -152,7 +156,7 @@ SA.anneala = function(data){
       state = SA.twodeepCopy(data);
       states.push(state);
     }
-    temp = temp * Math.pow(Math.E,-.002);
+    temp = temp * Math.pow(Math.E,-.0008);
   }
   return states;
 }
