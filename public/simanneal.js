@@ -3,8 +3,8 @@ SA.datareal = [[3, 2, 3, 1, 3, 2, 4, 1, 2, 1], [1, 2, 3, 4, 2, 2, 3, 2, 2, 1], [
 
 SA.datareala = (function(){
   var output = [];
-  for (i = 0; i < 20; i++){
-    for (j = 0; j < 20; j++){
+  for (i = 0; i < 10; i++){
+    for (j = 0; j < 10; j++){
       if (_.isUndefined(output[i])) {output[i] = []}
       output[i][j] = Math.floor(Math.random() * 4+1);
     }
@@ -151,7 +151,7 @@ SA.anneala = function(data){
       oldscore = SA.countBlocks(data),
       states = [],
       rule,p,candp,candidate,score,theta,state;
-  while(temp > .01){
+  while(oldscore > -850){
     rule = SA.randCells(data);
     p = Math.random();
     candidate = SA.exchangeCells(data,rule);
@@ -164,10 +164,11 @@ SA.anneala = function(data){
       state = SA.twodeepCopy(data);
       states.push(state);
     }
-    temp = temp * Math.pow(Math.E,-.002);
+    temp = temp * Math.pow(Math.E,-.01);
     i++;
+    if (i > 40000) {return SA.anneala(SA.datareal);}
   }
-  console.log(i);
+  SA.generations = i; 
   return states;
 }
 
@@ -191,8 +192,14 @@ SA.drawState = function(data){
   }
 }
 $(function(){
-  $('#canvas').click(function(){
-    a = SA.anneala(SA.datareal);
+  SA.drawState(SA.datareal);
+  $('#start').click(function(){
+    $('#loading').show();
+    setTimeout(function(){
+    a = SA.anneala(SA.datareala);
+    $('#gens').html(SA.generations);
+    $('#loading').hide();
     SA.i = setInterval(function(){var s = a.shift(); SA.drawState(s); if (a.length === 0){clearInterval(SA.i)}},1000/240);
+    },100);
   });
 });

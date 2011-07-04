@@ -1,8 +1,17 @@
 !!!
 %head
+  %link{:rel => "stylesheet", :href => "/SA.css"}  
+%body
+  #container
+    #leftbar
+      %h1 Simulated Annealing Demo
+      %p The simulation begins with a random 10x10 grid of four different colors. The only allowable 'move' is the exchanging of color between two blocks. Each generation is evaluated by a composite score of overall homogeneity (the total number of contiguous blocks of color) and density (the amount of same-colored blocks each block touches). The simulated annealing's termination condition is a quality threshold that can, often, be reached in fewer than 30,000 iterations.
+      %h2#start Start
+      %h3 
+        Generations:
+        %p#gens
+    %canvas{:id => "canvas", :width => 600, :height => 600}
+    #loading
   %script{:type => "text/javascript", :src => "https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"}
   %script{:type => "text/javascript", :src => "/underscore-min.js"}
   %script{:type => "text/javascript", :src => "/simanneal.js"}
-%body
-  #h1 Sim
-  %canvas{:id => "canvas", :width => 800, :height => 800}
