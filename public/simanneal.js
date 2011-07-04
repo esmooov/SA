@@ -39,6 +39,7 @@ SA.friends = function(data,memo,cell,ridx,cidx){
 }
 
 SA.countBlocks = function(data){
+  SA.touching = 0;
   var countdata = _(data).map(function(row,ri){
     return _(row).map(function(cell,ci){
       return [cell,ri,ci,false]
@@ -53,8 +54,10 @@ SA.countBlocks = function(data){
     blocks = blocks + score;
     end = result[0];
   }
-  return blocks-1;
+  return blocks-1 - (3*SA.touching);
 }
+
+SA.touching = 0;
 
 SA.trace = function(data){
   var row = _(data).detect(function(r){return _(r).detect(function(c){return ! c[3];})}),
@@ -67,7 +70,12 @@ SA.trace = function(data){
             b = c[1] < 9 ? data[c[1]+1][c[2]] : [-1,-1,-1,true];
             c[3] = true;
             _([l,r,t,b]).each(function(n){
-              if (n[0] === c[0] && ! n[3]){ counter++; moveMark(n) }
+              if (n[0] === c[0]){ 
+                SA.touching++;
+                if(! n[3]){ 
+                  counter++; moveMark(n) 
+                }
+              }
             });
       };
       if (row){
@@ -138,12 +146,12 @@ SA.anneal = function(data){
 }
 
 SA.anneala = function(data){
-  var temp = 5,
+  var temp = 4,
       i = 0,
       oldscore = SA.countBlocks(data),
       states = [],
       rule,p,candp,candidate,score,theta,state;
-  while(temp > .3){
+  while(temp > .01){
     rule = SA.randCells(data);
     p = Math.random();
     candidate = SA.exchangeCells(data,rule);
@@ -156,8 +164,10 @@ SA.anneala = function(data){
       state = SA.twodeepCopy(data);
       states.push(state);
     }
-    temp = temp * Math.pow(Math.E,-.0008);
+    temp = temp * Math.pow(Math.E,-.002);
+    i++;
   }
+  console.log(i);
   return states;
 }
 
